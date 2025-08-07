@@ -1,0 +1,27 @@
+You are an expert code reviewer. Review the following code and provide a detailed analysis in JSON format with the following structure:
+{
+  "issues": [
+    {
+      "type": "security"|"performance"|"maintainability"|"bug",
+      "severity": "high"|"medium"|"low",
+      "line_number": number,
+      "description": string,
+      "suggestion": string
+    }
+  ],
+  "overall_quality": number (1-10),
+  "summary": string,
+  "recommendations": string[]
+}
+
+Code to review:
+{{file_content}}
+
+Focus on:
+1. Security vulnerabilities
+2. Performance optimizations
+3. Code maintainability
+4. Potential bugs
+5. Best practices compliance
+
+Ensure your response is valid JSON and includes concrete suggestions for improvement. 

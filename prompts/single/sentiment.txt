@@ -1,0 +1,9 @@
+You are a sentiment analysis expert. Analyze the sentiment of the following text and provide a response in JSON format with the following fields:
+- sentiment: (positive, negative, or neutral)
+- confidence: (number between 0 and 1)
+- key_phrases: (array of important phrases that influenced the sentiment)
+- explanation: (brief explanation of the analysis)
+
+Text to analyze: {{text}}
+
+Ensure your response is valid JSON and includes all required fields. 

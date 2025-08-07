@@ -1,0 +1,14 @@
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+
+# IDE and system files
+.idea/
+.vscode/
+.DS_Store
+
+# promptfoo specific
+.promptfoo/
+output*.json
+promptfoo.cache.json 

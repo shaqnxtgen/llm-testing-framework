@@ -1,0 +1,136 @@
+# Code review test for example.py
+- description: "Code review test for example.py"
+  vars:
+    file_content: |
+      import sqlite3
+      import json
+      from typing import Dict, Any
+
+      def save_user_data(user_input: Dict[str, Any]) -> bool:
+          """Save user data to database"""
+          conn = sqlite3.connect('users.db')
+          cursor = conn.cursor()
+          
+          # Create table if not exists
+          cursor.execute('''
+          CREATE TABLE IF NOT EXISTS users
+          (id INTEGER PRIMARY KEY, username TEXT, password TEXT, data TEXT)
+          ''')
+          
+          # Insert user data - potential SQL injection vulnerability
+          query = f"INSERT INTO users (username, password, data) VALUES ('{user_input['username']}', '{user_input['password']}', '{json.dumps(user_input)}')"
+          cursor.execute(query)
+          
+          conn.commit()
+          return True
+
+      def get_user_data(username: str) -> Dict[str, Any]:
+          """Retrieve user data from database"""
+          conn = sqlite3.connect('users.db')
+          cursor = conn.cursor()
+          
+          # Fetch user data - potential SQL injection vulnerability
+          query = f"SELECT * FROM users WHERE username = '{username}'"
+          cursor.execute(query)
+          
+          result = cursor.fetchone()
+          if result:
+              return json.loads(result[3])
+          return {}
+  assert:
+    # Validate JSON structure
+    - type: is-json
+      transform: |
+        // Remove any potential extra quotes and clean up the output
+        let cleaned = output.trim();
+        // Remove markdown code block markers
+        cleaned = cleaned.replace(/^```json\s*\n/, '').replace(/\n```\s*$/, '');
+        // Log the cleaned output for debugging
+        console.log('Cleaned output:', cleaned);
+        return cleaned;
+      value: |
+        {
+          "type": "object",
+          "required": ["issues", "overall_quality", "summary", "recommendations"],
+          "properties": {
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["type", "severity", "line_number", "description", "suggestion"],
+                "properties": {
+                  "type": {"enum": ["security", "performance", "maintainability", "bug"]},
+                  "severity": {"enum": ["high", "medium", "low"]},
+                  "line_number": {"type": "number"},
+                  "description": {"type": "string"},
+                  "suggestion": {"type": "string"}
+                }
+              }
+            },
+            "overall_quality": {"type": "number", "minimum": 1, "maximum": 10},
+            "summary": {"type": "string"},
+            "recommendations": {"type": "array", "items": {"type": "string"}}
+          }
+        }
+    
+    # Check for specific security issues
+    - type: javascript
+      transform: |
+        let cleaned = output.trim();
+        cleaned = cleaned.replace(/^```json\s*\n/, '').replace(/\n```\s*$/, '');
+        return cleaned;
+      value: |
+        try {
+          const response = JSON.parse(output);
+          const hasSecurityIssue = response.issues.some(issue => 
+            issue.type === "security" && 
+            issue.description.toLowerCase().includes("sql injection")
+          );
+          return hasSecurityIssue;
+        } catch (e) {
+          console.error('Error parsing JSON:', e);
+          return false;
+        }
+    
+    # Model-graded review quality
+    - type: llm-rubric
+      value: |
+        Evaluate the code review response on:
+        1. Identification of SQL injection vulnerabilities
+        2. Recognition of missing connection closure
+        3. Suggestions for parameterized queries
+        4. Analysis of error handling
+        5. Completeness of the review
+        
+        The review should:
+        - Identify at least 3 distinct issues
+        - Provide actionable suggestions
+        - Include security and maintainability concerns
+        - Offer specific code improvements
+
+    # Verify coverage of important aspects
+    - type: contains-all
+      transform: |
+        let cleaned = output.trim();
+        cleaned = cleaned.replace(/^```json\s*\n/, '').replace(/\n```\s*$/, '');
+        return cleaned;
+      value: ["SQL injection", "connection", "parameterized", "error handling"]
+        
+    # Check severity assessment
+    - type: javascript
+      transform: |
+        let cleaned = output.trim();
+        cleaned = cleaned.replace(/^```json\s*\n/, '').replace(/\n```\s*$/, '');
+        return cleaned;
+      value: |
+        try {
+          const response = JSON.parse(output);
+          const hasCriticalSecurity = response.issues.some(issue => 
+            issue.type === "security" && 
+            issue.severity === "high"
+          );
+          return hasCriticalSecurity;
+        } catch (e) {
+          console.error('Error parsing JSON:', e);
+          return false;
+        } 

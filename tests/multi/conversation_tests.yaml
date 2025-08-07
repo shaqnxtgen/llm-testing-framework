@@ -1,0 +1,56 @@
+# New customer test
+- vars:
+    customer_name: "John Smith"
+    history: ""
+    user_message: "I need help with my recent order #12345"
+  assert:
+    - type: contains
+      value: "John Smith"
+    - type: contains
+      value: "help you"
+    - type: llm-rubric
+      value: |
+        Grade the conversation on:
+        1. Professional tone
+        2. Appropriate personalization
+        3. Clear understanding of the customer's issue
+        4. Helpful response to the order inquiry
+
+# Returning customer test
+- vars:
+    customer_name: "Sarah Johnson"
+    history: "a shipping delay"
+    user_message: "Following up on my delayed shipment"
+  assert:
+    - type: contains
+      value: "Sarah"
+    - type: contains
+      value: "shipping delay"
+    - type: javascript
+      value: |
+        return output.toLowerCase().includes('shipping') || 
+               output.toLowerCase().includes('delay') ||
+               output.toLowerCase().includes('shipment');
+    - type: llm-rubric
+      value: |
+        Evaluate the conversation for:
+        1. Acknowledgment of previous interaction
+        2. Continuity in handling the shipping delay issue
+        3. Appropriate level of urgency
+        4. Professional and empathetic tone
+
+# Complex issue test
+- vars:
+    customer_name: "Michael Brown"
+    history: ""
+    user_message: "I received the wrong item and it's damaged. Order #67890"
+  assert:
+    - type: contains-all
+      value: ["wrong item", "damaged", "#67890"]
+    - type: llm-rubric
+      value: |
+        Assess how well the response:
+        1. Addresses both issues (wrong item and damage)
+        2. Shows appropriate concern
+        3. Provides clear next steps
+        4. Maintains professional tone 
