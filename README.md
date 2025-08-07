@@ -2,23 +2,38 @@
 
 This project demonstrates how to test LLM prompts using promptfoo, focusing on different types of prompts and testing scenarios.
 
-## Setup
+## Quick Start
 
-1. Install promptfoo globally:
+1. Clone the repository:
+```bash
+git clone https://github.com/Jaimeman84/promptfoo-framework-sample.git
+cd promptfoo-framework-sample
+```
+
+2. Install promptfoo globally:
 ```bash
 npm install -g promptfoo
 ```
 
-2. Set up your API keys in environment variables:
+3. Set up your API keys in environment variables:
 ```bash
 export OPENAI_API_KEY=your_key_here
 export ANTHROPIC_API_KEY=your_key_here
 ```
 
-Or create a `.env` file:
+Or create a `.env` file in the project root:
 ```
 OPENAI_API_KEY=your_key_here
 ANTHROPIC_API_KEY=your_key_here
+```
+
+4. Run your first test:
+```bash
+# Test sentiment analysis
+promptfoo eval -c config/promptfooconfig.yaml -p prompts/single/sentiment.txt -t tests/single/sentiment_tests.yaml
+
+# View results in browser
+promptfoo view
 ```
 
 ## Project Structure
@@ -99,6 +114,19 @@ Common assertion types:
 - `is-json`: Validate JSON structure
 - `contains-all`: Check for multiple strings
 - `llm-rubric`: Use AI to grade response quality
+
+## Troubleshooting
+
+1. **Path Issues**: Make sure you're in the project root directory when running commands
+2. **API Keys**: Double-check your environment variables or .env file
+3. **Model Names**: Verify provider names in config/promptfooconfig.yaml match your API access
+
+## Support
+
+If you encounter any issues or have questions:
+1. Check the [promptfoo documentation](https://promptfoo.dev/docs)
+2. Open an issue in this repository
+3. Join the [promptfoo Discord community](https://discord.gg/promptfoo)
 
 ---
 Created by Jaime Mantilla, MSIT + AI  
