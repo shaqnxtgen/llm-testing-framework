@@ -2,13 +2,32 @@
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
+.env.production
+*.env
 
 # IDE and system files
 .idea/
 .vscode/
 .DS_Store
+*.swp
+*.swo
+Thumbs.db
 
 # promptfoo specific
 .promptfoo/
 output*.json
-promptfoo.cache.json 
+promptfoo.cache.json
+**/results.html
+**/output/
+**/.promptfoo/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock 

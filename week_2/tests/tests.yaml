@@ -1,0 +1,20 @@
+- vars:
+    topic: bananas
+  assert:
+    # Make sure output contains the word "bananas"
+    - type: icontains
+      value: bananas
+
+- vars:
+    topic: avocado toast
+  assert:
+    # Make sure output contains the word "avocado"
+    - type: icontains
+      value: avocado
+
+- vars:
+    topic: new york city
+  assert:
+    # Make sure output contains the word "New York City"
+    - type: icontains
+      value: New York City
