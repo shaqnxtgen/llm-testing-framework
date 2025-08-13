@@ -1,0 +1,10 @@
+providers:
+  - openai:gpt-4o-mini
+
+prompts:
+  - "Greet the user in French."
+
+tests:
+  - assert:
+      - type: contains
+        value: "Bonjour"
