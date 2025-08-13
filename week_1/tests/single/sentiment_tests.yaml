@@ -1,0 +1,86 @@
+
+# Positive sentiment test
+- description: "Positive sentiment test"
+  vars:
+    text: "I absolutely love this product! It's amazing and has improved my life significantly."
+  assert:
+    - type: is-json
+      transform: |
+        // Remove markdown code block markers and extract JSON
+        const match = output.match(/```json\n([\s\S]*?)\n```/);
+        if (match) return match[1];
+        return output;
+      value: |
+        {
+          "type": "object",
+          "required": ["sentiment", "confidence", "key_phrases", "explanation"],
+          "properties": {
+            "sentiment": {"enum": ["positive", "negative", "neutral"]},
+            "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+            "key_phrases": {"type": "array", "items": {"type": "string"}},
+            "explanation": {"type": "string"}
+          }
+        }
+    - type: javascript
+      transform: |
+        const match = output.match(/```json\n([\s\S]*?)\n```/);
+        if (match) return match[1];
+        return output;
+      value: |
+        const response = JSON.parse(output);
+        return response.sentiment === "positive" && response.confidence > 0.7;
+    - type: llm-rubric
+      value: |
+        Does the response accurately identify positive sentiment?
+        Scoring criteria:
+        - Correctly identifies "love" and "amazing" as positive indicators
+        - Confidence score reflects the strong positive sentiment
+        - Key phrases include the most important positive words
+        - Explanation is clear and justified
+
+# Negative sentiment test
+- description: "Negative sentiment test"
+  vars:
+    text: "This is the worst experience ever. I'm extremely disappointed and frustrated."
+  assert:
+    - type: contains
+      transform: |
+        const match = output.match(/```json\n([\s\S]*?)\n```/);
+        if (match) return match[1];
+        return output;
+      value: '"sentiment": "negative"'
+    - type: javascript
+      transform: |
+        const match = output.match(/```json\n([\s\S]*?)\n```/);
+        if (match) return match[1];
+        return output;
+      value: |
+        const response = JSON.parse(output);
+        return response.key_phrases.some(phrase => 
+          ["worst", "disappointed", "frustrated"].includes(phrase.toLowerCase())
+        );
+    - type: llm-rubric
+      value: |
+        Grade the response on:
+        1. Accuracy of negative sentiment detection
+        2. Appropriate confidence level for strong negative sentiment
+        3. Inclusion of key negative phrases
+        4. Clear explanation of negative indicators
+
+# Neutral sentiment test
+- description: "Neutral sentiment test"
+  vars:
+    text: "The weather today is cloudy with a temperature of 20 degrees."
+  assert:
+    - type: contains
+      transform: |
+        const match = output.match(/```json\n([\s\S]*?)\n```/);
+        if (match) return match[1];
+        return output;
+      value: '"sentiment": "neutral"'
+    - type: llm-rubric
+      value: |
+        Evaluate if the response correctly:
+        1. Identifies neutral sentiment in factual statement
+        2. Assigns appropriate confidence level
+        3. Explains why the text is considered neutral 

@@ -1,0 +1,57 @@
+# Main configuration file for promptfoo evaluations
+description: "Comprehensive prompt evaluation examples"
+
+# Prompt configuration
+prompts:
+  - prompts/single/sentiment.txt
+  - prompts/multi/chat_thread.txt
+  - prompts/file_based/code_review.txt
+
+# Test configuration
+tests:
+  - tests/single/sentiment_tests.yaml
+  - tests/multi/conversation_tests.yaml
+  - tests/file_based/code_review_tests.yaml
+
+# Provider configurations
+providers:
+  - openai:gpt-4o-mini
+  - openai:gpt-4o
+  - anthropic:claude-3-5-sonnet-latest
+  - anthropic:claude-sonnet-4-20250514
+
+# Default maximum tokens for responses
+max_tokens: 500
+
+# Evaluation settings
+eval:
+  # Number of parallel evaluations
+  max_concurrency: 5
+  
+  # Cache settings
+  cache: true
+  cache_key: "v1"
+
+# Shared assertion functions
+assertion_functions:
+  exact_match: |
+    (expected, actual) => expected === actual
+  contains_all: |
+    (expected, actual) => expected.every(item => actual.includes(item))
+  json_valid: |
+    (_, actual) => {
+      try {
+        JSON.parse(actual);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+# Default grading criteria for model-graded evaluations
+default_grading_criteria: |
+  Grade the response on the following criteria:
+  1. Accuracy (0-10): How factually accurate is the response?
+  2. Completeness (0-10): Does it address all aspects of the prompt?
+  3. Clarity (0-10): Is the response clear and well-structured?
+  Provide a score for each criterion and a brief explanation. 
